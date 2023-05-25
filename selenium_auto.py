@@ -56,17 +56,23 @@ def save_img_to(path):
     n = check_img_num()
     for num in range(n):
         js4 = 'return document.querySelector("body > clip-front").shadowRoot.querySelector("#products > figure:nth-child('+str(num+1)+') > img.pic")'
-        pic = driver.execute_script(js4)
+        src = None
+        caption = None
+        ext = None
+        try:
+            pic = driver.execute_script(js4)
+            src = pic.get_attribute("src")
+            caption = pic.get_attribute("title")
 
-        src = pic.get_attribute("src")
-        caption = pic.get_attribute("title")
-
-        # title = caption.replace(' ', '_')
-        ext = src.split('.')[-1]
-        # filename = title+'.'+ext
+            # title = caption.replace(' ', '_')
+            ext = src.split('.')[-1]
+            # filename = title+'.'+ext
+        except Exception as e:
+            print("Exception occured "+str(e))
+            continue
 
         try: 
-            img = requests.get(src,headers=header)
+            img = requests.get(src,headers=header,timeout=5)
             f = open(path+"/dataset/"+str(num+1)+'.'+ext,'wb') 
             f.write(img.content)
             f.close()
@@ -74,7 +80,7 @@ def save_img_to(path):
             print(img)
             print(caption)
         except Exception as e:
-            print("Exception occured"+e)
+            print("Exception occured "+str(e))
         
     f_caption.close()
 
