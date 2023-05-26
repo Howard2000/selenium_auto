@@ -87,8 +87,10 @@ def save_img_to(path,list):
         caption = img_info[0]
         
         try: 
-            # img = requests.get(src,headers=header,timeout=5)
-            img = Image.open(urllib.request.urlopen(src,timeout=5))
+            response = requests.get(src,headers=header,timeout=5,stream=True)
+            response.raw.decode_content = True
+            img = Image.open(response.raw)
+            # img = Image.open(urllib.request.urlopen(src,timeout=5))
             ext = img.format
             if(check_img_size(img,512)):
                 num+=1
@@ -99,7 +101,7 @@ def save_img_to(path,list):
             # f.write(img.content)
             # f.close()
             f_caption.write(str(num)+'.'+caption+'\n')
-            print(img)
+            # print(img)
             print(caption)
         except Exception as e:
             print("Exception occured "+str(e))
