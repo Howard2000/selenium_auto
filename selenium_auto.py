@@ -6,6 +6,7 @@ import urllib
 from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -108,18 +109,27 @@ def save_img_to(path,list):
         
     f_caption.close()
 
+def search_for_keywards(driver,key):
+    js = 'return document.querySelector("body > clip-front").shadowRoot.querySelector("#searchBar")'
+    search_bar = driver.execute_script(js)
+    search_bar.send_keys(key)
+    search_bar.send_keys(Keys.ENTER)
+
 if __name__ == "__main__":
 
     path = os.getcwd()
 
     driver = open_chrome_driver()
 
-    open_url(driver, url)
+    open_url(driver, host)
 
-    wait_by_sec(10)
+    wait_by_sec(3)
 
+    key_wordzs = input("key words: ")
     number = int(input("number of images: "))
+    search_for_keywards(driver, key_wordzs)
 
+    wait_by_sec(5)
     load_img(number)
 
     img_list = get_img_info(driver)
