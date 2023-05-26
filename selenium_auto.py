@@ -2,6 +2,8 @@
 import os
 import time
 import requests
+import urllib
+from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -50,10 +52,9 @@ def load_img(n):
         scroll_down()
         loaded = check_img_num()
 
-def save_img_to(path):
-
-    f_caption = open(path+"/dataset/caption.txt",'w')
+def get_img_info(driver):
     n = check_img_num()
+    list = []
     for num in range(n):
         js4 = 'return document.querySelector("body > clip-front").shadowRoot.querySelector("#products > figure:nth-child('+str(num+1)+') > img.pic")'
         src = None
@@ -63,20 +64,41 @@ def save_img_to(path):
             pic = driver.execute_script(js4)
             src = pic.get_attribute("src")
             caption = pic.get_attribute("title")
-
-            # title = caption.replace(' ', '_')
-            ext = src.split('.')[-1]
-            # filename = title+'.'+ext
+            temp = [caption, src]
+            list.append(temp)
         except Exception as e:
             print("Exception occured "+str(e))
-            continue
+    return list
 
+def check_img_size(img,size):
+    img_size = img.size
+    if (img_size[0]<size or img_size[1]<size):
+        return False
+    else:
+        return True
+
+def save_img_to(path,list):
+    num=0
+    f_caption = open(path+"/dataset/caption.txt",'w')
+    # n = check_img_num()
+    for img_info in list:
+        
+        src = img_info[1]
+        caption = img_info[0]
+        
         try: 
-            img = requests.get(src,headers=header,timeout=5)
-            f = open(path+"/dataset/"+str(num+1)+'.'+ext,'wb') 
-            f.write(img.content)
-            f.close()
-            f_caption.write(str(num+1)+'.'+caption+'\n')
+            # img = requests.get(src,headers=header,timeout=5)
+            img = Image.open(urllib.request.urlopen(src,timeout=5))
+            ext = img.format
+            if(check_img_size(img,768)):
+                num+=1
+            else:
+                continue
+            img.save(path+"/dataset/"+str(num)+'.'+ext)
+            # f = open(path+"/dataset/"+str(num)+'.'+ext,'wb') 
+            # f.write(img.content)
+            # f.close()
+            f_caption.write(str(num)+'.'+caption+'\n')
             print(img)
             print(caption)
         except Exception as e:
@@ -98,5 +120,10 @@ if __name__ == "__main__":
 
     load_img(number)
 
-    save_img_to(path)
+    img_list = get_img_info(driver)
+
+    # for it in img_list:
+    #     print(it)
+    
+    save_img_to(path,img_list)
 
