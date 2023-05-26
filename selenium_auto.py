@@ -90,7 +90,7 @@ def save_img_to(path,list):
             # img = requests.get(src,headers=header,timeout=5)
             img = Image.open(urllib.request.urlopen(src,timeout=5))
             ext = img.format
-            if(check_img_size(img,768)):
+            if(check_img_size(img,512)):
                 num+=1
             else:
                 continue
