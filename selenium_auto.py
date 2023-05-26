@@ -2,7 +2,6 @@
 import os
 import time
 import requests
-import urllib
 from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -91,7 +90,7 @@ def save_img_to(path,list):
             response = requests.get(src,headers=header,timeout=5,stream=True)
             response.raw.decode_content = True
             img = Image.open(response.raw)
-            # img = Image.open(urllib.request.urlopen(src,timeout=5))
+            
             ext = img.format
             if(check_img_size(img,512)):
                 num+=1
@@ -118,6 +117,8 @@ def search_for_keywards(driver,key):
 if __name__ == "__main__":
 
     path = os.getcwd()
+    if not os.path.exists(path+"/dataset/"):
+        os.makedirs(path+"/dataset/")
 
     driver = open_chrome_driver()
 
@@ -125,9 +126,9 @@ if __name__ == "__main__":
 
     wait_by_sec(3)
 
-    key_wordzs = input("key words: ")
-    number = int(input("number of images: "))
-    search_for_keywards(driver, key_wordzs)
+    key_words = input("Enter key words: ")
+    number = int(input("Enter search range: "))
+    search_for_keywards(driver, key_words)
 
     wait_by_sec(5)
     load_img(number)
