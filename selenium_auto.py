@@ -105,8 +105,6 @@ def save_img_to(path,list):
             print(caption)
         except Exception as e:
             print("Exception occured "+str(e))
-        
-    
 
 def search_for_keywards(driver,key):
     js = 'return document.querySelector("body > clip-front").shadowRoot.querySelector("#searchBar")'
@@ -114,7 +112,7 @@ def search_for_keywards(driver,key):
     search_bar.send_keys(key)
     search_bar.send_keys(Keys.ENTER)
 
-def set_search_filter():
+def set_search_filter(driver):
     #set Aesthetic score to 9
     js = 'return document.querySelector("body > clip-front").shadowRoot.querySelector("#filter > label:nth-child(26) > select > option:nth-child(11)")'
     score_9 = driver.execute_script(js)
@@ -135,7 +133,7 @@ if __name__ == "__main__":
     key_words = input("Enter key words: ")
     number = int(input("Enter search range: "))
 
-    set_search_filter()
+    set_search_filter(driver)
     search_for_keywards(driver, key_words)
 
     wait_by_sec(5)
