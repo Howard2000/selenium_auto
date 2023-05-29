@@ -79,7 +79,7 @@ def check_img_size(img,size):
 
 def save_img_to(path,list):
     num=0
-    f_caption = open(path+"/dataset/caption.txt",'w')
+    
     # n = check_img_num()
     for img_info in list:
         
@@ -97,22 +97,28 @@ def save_img_to(path,list):
             else:
                 continue
             img.save(path+"/dataset/"+str(num)+'.'+ext)
-            # f = open(path+"/dataset/"+str(num)+'.'+ext,'wb') 
-            # f.write(img.content)
-            # f.close()
-            f_caption.write(str(num)+'.'+caption+'\n')
-            # print(img)
+
+            f = open(path+"/dataset/"+str(num)+".txt",'w')
+            f.write(caption+'\n')
+            f.close()
+            
             print(caption)
         except Exception as e:
             print("Exception occured "+str(e))
         
-    f_caption.close()
+    
 
 def search_for_keywards(driver,key):
     js = 'return document.querySelector("body > clip-front").shadowRoot.querySelector("#searchBar")'
     search_bar = driver.execute_script(js)
     search_bar.send_keys(key)
     search_bar.send_keys(Keys.ENTER)
+
+def set_search_filter():
+    #set Aesthetic score to 9
+    js = 'return document.querySelector("body > clip-front").shadowRoot.querySelector("#filter > label:nth-child(26) > select > option:nth-child(11)")'
+    score_9 = driver.execute_script(js)
+    score_9.click()
 
 if __name__ == "__main__":
 
@@ -128,6 +134,8 @@ if __name__ == "__main__":
 
     key_words = input("Enter key words: ")
     number = int(input("Enter search range: "))
+
+    set_search_filter()
     search_for_keywards(driver, key_words)
 
     wait_by_sec(5)
